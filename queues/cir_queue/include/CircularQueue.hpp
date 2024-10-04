@@ -1,28 +1,26 @@
-// CircularQueue.hpp
-// Header file for the CircularQueue class
 #ifndef CIRCULARQUEUE_HPP
 #define CIRCULARQUEUE_HPP
 
+#include <vector>
+#include <string>
+
 class CircularQueue {
 private:
-    int* queue;  // Pointer to the array that holds queue elements
-    int front;   // Index of the front element (dequeue position)
-    int rear;    // Index of the rear element (enqueue position)
-    int size;    // Current size of the queue (number of elements)
-    int capacity; // Maximum capacity of the queue
+    std::vector<std::string> queue;  // Vector to store queue elements (bigrams or strings)
+    int front;                       // Points to the front of the queue
+    int rear;                        // Points to the rear of the queue
+    int maxSize;                     // Maximum size of the queue
+    int currentSize;                 // Current number of elements in the queue
 
 public:
-    // Constructor to initialize the queue with a given capacity
-    CircularQueue(int c);
+    // Constructor to initialize the queue with a given size
+    CircularQueue(int size);
 
-    // Destructor to clean up dynamically allocated memory
-    ~CircularQueue();
+    // Enqueue function to add an element to the rear
+    bool enqueue(const std::string& bigram);
 
-    // Function to insert an element into the queue (enqueue operation)
-    bool enqueue(int data);
-
-    // Function to remove an element from the queue (dequeue operation)
-    bool dequeue();
+    // Dequeue function to remove an element from the front
+    std::string dequeue();
 
     // Function to check if the queue is empty
     bool isEmpty() const;
@@ -30,8 +28,12 @@ public:
     // Function to check if the queue is full
     bool isFull() const;
 
+    // Function to get the current size of the queue
+    int size() const;
+
     // Function to display all elements in the queue
-    bool display() const;
+    std::vector<std::string> displayQueue() const;
 };
 
-#endif // CIRCULARQUEUE_HPP
+#endif
+
