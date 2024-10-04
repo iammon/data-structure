@@ -1,94 +1,72 @@
-// CircularQueue.cpp
-// Source file containing the implementation of the CircularQueue class
 #include "CircularQueue.hpp"
 #include <iostream>
 
-using namespace std;
-
-// Constructor: initializes the circular queue with the given capacity
-// Sets front and rear to -1 indicating the queue is empty
-CircularQueue::CircularQueue(int c) {
-    capacity = c;               // Set the capacity of the queue
-    queue = new int[capacity];   // Dynamically allocate memory for the queue array
-    front = rear = -1;           // Initialize front and rear to -1, meaning empty queue
-    size = 0;                    // Initially, the size of the queue is 0
+// Constructor to initialize queue properties
+CircularQueue::CircularQueue(int size) : front(-1), rear(-1), maxSize(size), currentSize(0) {
+    queue.resize(size);  // Resize the vector to the desired size
 }
 
-// Destructor: releases the dynamically allocated memory for the queue
-CircularQueue::~CircularQueue() {
-    delete[] queue;  // Free the dynamically allocated array
-}
-
-// Enqueue: inserts an element into the rear of the queue
-// Returns true if successful, false if the queue is full
-bool CircularQueue::enqueue(int data) {
-    // Check if the queue is full
-    if ((rear + 1) % capacity == front) {
-        cout << "Queue is full!" << endl;
-        return false;  // Return false if the queue is full
+// Enqueue function to add a new element at the rear of the queue
+bool CircularQueue::enqueue(const std::string& bigram) {
+    if (isFull()) {
+        return false;  // Queue is full, cannot add more elements
     }
 
-    // If the queue is empty, set front to 0 (first element inserted)
-    if (front == -1) front = 0;
-
-    // Move rear to the next position in a circular manner
-    rear = (rear + 1) % capacity;
-
-    // Insert the new element at the rear position
-    queue[rear] = data;
-
-    // Increase the size of the queue
-    size++;
-    return true;  // Return true if enqueue was successful
-}
-
-// Dequeue: removes an element from the front of the queue
-// Returns true if successful, false if the queue is empty
-bool CircularQueue::dequeue() {
-    // Check if the queue is empty
+    // If queue is empty, set both front and rear to 0
     if (front == -1) {
-        cout << "Queue is empty!" << endl;
-        return false;  // Return false if the queue is empty
+        front = 0;
     }
 
-    // Print the dequeued element (optional)
-    cout << "Dequeued: " << queue[front] << endl;
-
-    // If the queue becomes empty after this dequeue operation
-    if (front == rear) {
-        front = rear = -1;  // Reset front and rear to -1 indicating an empty queue
-    } else {
-        // Move front to the next position in a circular manner
-        front = (front + 1) % capacity;
-    }
-
-    // Decrease the size of the queue
-    size--;
-    return true;  // Return true if dequeue was successful
+    // Move rear circularly using modulo operator
+    rear = (rear + 1) % maxSize;
+    queue[rear] = bigram;
+    currentSize++;  // Increase the size of the queue
+    return true;
 }
 
-// isEmpty: checks if the queue is empty
+// Dequeue function to remove an element from the front of the queue
+std::string CircularQueue::dequeue() {
+    if (isEmpty()) {
+        return "Queue is empty";  // Queue is empty, no elements to remove
+    }
+
+    std::string dequeuedBigram = queue[front];
+    front = (front + 1) % maxSize;
+    currentSize--;  // Decrease the size of the queue
+
+    // If queue becomes empty, reset front and rear
+    if (currentSize == 0) {
+        front = -1;
+        rear = -1;
+    }
+
+    return dequeuedBigram;
+}
+
+// Function to check if the queue is empty
 bool CircularQueue::isEmpty() const {
-    return front == -1;  // Queue is empty if front is -1
+    return currentSize == 0;
 }
 
-// isFull: checks if the queue is full
+// Function to check if the queue is full
 bool CircularQueue::isFull() const {
-    return (rear + 1) % capacity == front;  // Queue is full if rear+1 equals front in a circular manner
+    return currentSize == maxSize;
 }
 
-// Display: prints the elements of the queue from front to rear
-void CircularQueue::display() const {
-    // Check if the queue is empty
-    if (front == -1) {
-        cout << "Queue is empty!" << endl;
-        return;
-    }
+// Function to return the current size of the queue
+int CircularQueue::size() const {
+    return currentSize;
+}
 
-    // Print the elements in a circular manner
-    cout << "Queue elements: ";
-    for (int i = front; i != rear; i = (i + 1) % capacity) {
-        cout << queue[i] << " ";  // Print each element from front to rear
+// Function to display all elements in the queue
+std::vector<std::string> CircularQueue::displayQueue() const {
+    std::vector<std::string> elements;
+    if (!isEmpty()) {
+        int i = front;
+        do {
+            elements.push_back(queue[i]);
+            i = (i + 1) % maxSize;
+        } while (i != (rear + 1) % maxSize);  // Traverse circularly until we reach the rear
     }
-    cout << queue[rear] << endl;  // Print the last element at rear
+    return elements;
 }
